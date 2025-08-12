@@ -1,0 +1,336 @@
+/* Imports */
+@import url('https://fonts.googleapis.com/css2?family=Libertinus+Sans:wght@400;700&display=swap');
+ .navbar-font {
+	font-family: 'Libertinus Sans', Arial, sans-serif;
+	color: #4F200D;
+	font-size: 1.25rem;
+}
+
+@import 'tailwindcss';
+@plugin '@tailwindcss/forms';
+@plugin '@tailwindcss/typography';
+
+/* Imports */
+
+/* =====================
+	 StatsBanner Styles
+	 ===================== */
+.stats-banner-container {
+	width: 100%;
+	background-color: #F6F1E9;
+	padding-top: 3rem;
+	padding-bottom: 3rem;
+}
+.stats-banner-row {
+	display: flex;
+	flex-direction: row;
+	width: 100%;
+	justify-content: space-between;
+	align-items: center;
+	color: #4F200D;
+	font-size: 1.125rem;
+	font-weight: 600;
+	padding-left: 2rem;
+	padding-right: 2rem;
+}
+.stats-banner-col {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	flex: 1;
+}
+.stats-banner-number {
+	font-size: 3rem;
+	font-weight: bold;
+}
+.stats-banner-desc {
+	font-size: 0.875rem;
+	color: #4F200D;
+	margin-top: 0.25rem;
+}
+.stats-banner-separator {
+	margin-left: 1rem;
+	margin-right: 1rem;
+	font-size: 1.875rem;
+	color: #4F200D;
+	user-select: none;
+}
+
+
+/* =====================
+	 ImageSlider Styles
+	 ===================== */
+.image-slider-container {
+	position: relative;
+	margin-left: auto;
+	margin-right: auto;
+	height: 46rem;
+	overflow: hidden;
+}
+.image-slider-overlay {
+	position: absolute;
+	z-index: 10;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	pointer-events: none;
+}
+.image-slider-title {
+	font-size: 2.25rem;
+	font-weight: 800;
+	color: #fff;
+	text-shadow: 0 2px 8px rgba(0,0,0,0.5);
+	margin-bottom: 1.5rem;
+	text-align: center;
+	pointer-events: auto;
+}
+.image-slider-apply-btn {
+	background-color: #2563eb;
+	color: #fff;
+	font-weight: 600;
+	padding: 2rem 1rem;
+	border-radius: 0.75rem;
+	box-shadow: 0 4px 12px 0 rgba(0,0,0,0.15);
+	font-size: 1.125rem;
+	pointer-events: auto;
+	transition: background 0.2s;
+}
+.image-slider-apply-btn:hover {
+	background-color: #1d4ed8;
+}
+.image-slider-img {
+	position: absolute;
+	inset: 0;
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	opacity: 0;
+	z-index: 0;
+	transition: opacity 0.7s;
+}
+.image-slider-img.active {
+	opacity: 1;
+	z-index: 1;
+}
+.image-slider-indicators {
+	position: absolute;
+	bottom: 0.5rem;
+	left: 50%;
+	transform: translateX(-50%);
+	display: flex;
+	gap: 0.5rem;
+}
+.image-slider-indicator {
+	width: 0.75rem;
+	height: 0.75rem;
+	border-radius: 9999px;
+	background: #fff;
+	border: 1px solid #d1d5db;
+	transition: background 0.3s;
+}
+.image-slider-indicator.active {
+	background: #2563eb;
+}
+
+
+/* =====================
+	 AnnouncementCard Styles
+	 ===================== */
+.announcement-carousel-container {
+	position: relative;
+	height: 400px;
+	max-height: 540px;
+	width: 90%;
+	max-width: 90%;
+	margin-left: auto;
+	margin-right: auto;
+}
+.announcement-carousel-list {
+	display: flex;
+	overflow-x: auto;
+	gap: 2rem;
+	height: 100%;
+	align-items: center;
+	width: 100%;
+	max-width: 100%;
+	scroll-snap-type: x mandatory;
+	scrollbar-width: none;
+}
+.announcement-carousel-btn {
+	position: absolute;
+	top: 50%;
+	transform: translateY(-50%);
+	z-index: 10;
+	background: #fff;
+	border: 1px solid #d1d5db;
+	border-radius: 9999px;
+	box-shadow: 0 1px 3px 0 rgba(0,0,0,0.1);
+	padding: 0.5rem;
+	transition: background 0.2s;
+}
+.announcement-carousel-btn:hover {
+	background: #dbeafe;
+}
+.announcement-carousel-btn-prev {
+	left: 0;
+}
+.announcement-carousel-btn-next {
+	right: 0;
+}
+.announcement-card {
+	background: #fff;
+	border-radius: 0.75rem;
+	box-shadow: 0 10px 20px 0 rgba(0,0,0,0.10);
+	display: flex;
+	flex-direction: column;
+	min-width: 320px;
+	max-width: 350px;
+	width: 100%;
+	scroll-snap-align: start;
+	height: 400px;
+	transition: transform 0.3s, box-shadow 0.3s;
+}
+@media (min-width: 768px) {
+	.announcement-carousel-container {
+		height: 540px;
+	}
+	.announcement-card {
+		height: 440px;
+	}
+}
+.announcement-card-image-wrapper {
+	width: 100%;
+	aspect-ratio: 1 / 1;
+	overflow: hidden;
+	border-top-left-radius: 0.75rem;
+	border-top-right-radius: 0.75rem;
+}
+.announcement-card-image {
+	object-fit: cover;
+	width: 100%;
+	height: 100%;
+}
+.announcement-card-content {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	flex: 1;
+	padding: 1.5rem;
+}
+.announcement-card-title {
+	font-size: 1.25rem;
+	font-weight: bold;
+	color: #1e3a8a;
+	margin-bottom: 0.5rem;
+	text-align: center;
+}
+.announcement-card-description {
+	color: #374151;
+	text-align: center;
+	margin-bottom: 1rem;
+}
+
+	.about-section-container {
+		width: 90%;
+		margin: 3rem auto;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		background-color: #102E50;
+		border-radius: 0.75rem;
+		box-shadow: 0 10px 20px 0 rgba(0,0,0,0.15);
+		overflow: hidden;
+	}
+@media (min-width: 768px) {
+	.about-section-container {
+		flex-direction: row;
+	}
+}
+.about-section-content {
+	flex: 1;
+	padding: 2rem;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: flex-start;
+}
+.about-section-title {
+	font-size: 1.875rem;
+	font-weight: bold;
+	margin-bottom: 1.25rem;
+	color: #fff;
+}
+.about-section-description {
+	color: #f3f4f6;
+	font-size: 1.125rem;
+	line-height: 1.75;
+}
+.about-section-image-wrapper {
+	flex: 1;
+	display: flex;
+	justify-content: flex-end;
+	align-items: center;
+}
+.about-section-image {
+	width: 100%;
+	max-width: 700px;
+	height: auto;
+	object-fit: cover;
+	border-radius: 0.75rem;
+}
+
+
+.navbar-menu-btn {
+	display: none;
+	color: #2563eb;
+	outline: none;
+	padding: 0.5rem;
+	border-radius: 0.5rem;
+	transition: background-color 0.2s;
+}
+.navbar-menu-btn:hover {
+	background-color: #dbeafe;
+}
+@media (min-width: 768px) {
+	.navbar-menu-btn {
+		display: none;
+	}
+}
+@media (max-width: 767px) {
+	.navbar-menu-btn {
+		display: inline-block;
+	}
+}
+.navbar-container {
+	padding-left: 1.5rem;
+	padding-right: 1.5rem;
+	padding-top: 0.75rem;
+	padding-bottom: 0.75rem;
+	box-shadow: 0 1px 2px 0 rgba(0,0,0,0.05);
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	background-color: #ffd62e;
+}
+.navbar-link {
+	font-weight: 500;
+	text-decoration: none;
+	transition: color 0.2s;
+}
+.navbar-link:hover {
+	text-decoration: underline;
+}
+
+
+
+
+/* AboutSection specific styles */
+.about-section-brown {
+	color: #4F200D;
+}
