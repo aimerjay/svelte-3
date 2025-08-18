@@ -19,7 +19,7 @@ function scrollCarousel(amount: number) {
 
 	let { children } = $props();
 </script>
-
+<!-- before connecting to deployed backend -->
 <svelte:head>
 	<link rel="icon" href={favicon} />
 </svelte:head>
