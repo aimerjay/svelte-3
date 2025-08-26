@@ -25,11 +25,31 @@
   function closeModal() {
     showModal = false;
   }
+  let isEditing = false;
   function submitApplication() {
-    applications = [...applications, { ...form, status: 'Submitted' }];
-    status = 'Submitted';
+    if (isEditing) {
+      // Update the first application (since only one is allowed)
+      applications = applications.map((app, idx) => idx === 0 ? { ...form, status: 'Submitted' } : app);
+      isEditing = false;
+    } else {
+      applications = [...applications, { ...form, status: 'Submitted' }];
+      status = 'Submitted';
+    }
     closeModal();
     form = { name: '', email: '', institution: '', course: '', reason: '' };
+  }
+  function editApplication() {
+    if (applications.length > 0) {
+      form = {
+        name: applications[0].name,
+        email: applications[0].email,
+        institution: applications[0].institution,
+        course: applications[0].course,
+        reason: applications[0].reason
+      };
+      isEditing = true;
+      showModal = true;
+    }
   }
 </script>
 
@@ -41,9 +61,14 @@
 
   {#if status !== 'Not Submitted'}
     <div class="mt-8 w-2/3 bg-white rounded-lg shadow-xl p-6 relative mx-auto">
-      <button class="absolute top-4 right-4 bg-red-100 text-red-700 px-6 py-2 rounded-lg font-bold shadow hover:bg-red-200 transition" on:click={() => { status = 'Not Submitted'; applications = []; }}>
-        Withdraw Application
-      </button>
+      <div class="absolute top-4 right-4 flex gap-2">
+        <button class="bg-blue-100 text-blue-700 px-6 py-2 rounded-lg font-bold shadow hover:bg-blue-200 transition" on:click={editApplication}>
+          Edit
+        </button>
+        <button class="bg-red-100 text-red-700 px-6 py-2 rounded-lg font-bold shadow hover:bg-red-200 transition" on:click={() => { status = 'Not Submitted'; applications = []; }}>
+          Withdraw Application
+        </button>
+      </div>
       <h2 class="text-2xl font-bold text-blue-900 mb-2">Your Application Status</h2>
       <p class="text-lg text-gray-700">Status: <span class="font-bold text-green-600">{status}</span></p>
     </div>
