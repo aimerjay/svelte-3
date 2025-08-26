@@ -1,4 +1,42 @@
 <script lang="ts">
+  function removePost(id: string) {
+    deleteGraduate(id).then(() => {
+      posts = posts.filter(post => post.id !== id);
+    });
+    menuOpenIdx = null;
+  }
+  let menuOpenIdx: number | null = null;
+  let editIdx: number | null = null;
+
+  // For editing
+  function startEdit(idx: number) {
+    editIdx = idx;
+    const post = posts[idx];
+    name = post.name;
+    institution = post.institution;
+    course = post.course;
+    date_grad = post.date_grad;
+    testimony = post.testimony;
+    showModal = true;
+    menuOpenIdx = null;
+  }
+
+  async function updatePost(id: string) {
+    if (!name || !testimony || !date_grad) return;
+    const updated = {
+      name,
+      institution,
+      course,
+      date_grad,
+      testimony
+    };
+    try {
+      const result = await updateGraduate(id, updated);
+      posts = posts.map(post => post.id === id ? result : post);
+    } catch {}
+    closeModal();
+    editIdx = null;
+  }
   import { onMount } from 'svelte';
   import { getGraduates, createGraduate, updateGraduate, deleteGraduate } from '$lib/api';
 
@@ -36,30 +74,19 @@
     if (!name || !testimony || !date_grad) return;
     const newPost = {
       name,
-      avatar: '/images/award.jpg',
       institution,
       course,
       date_grad,
-      testimony,
-      date_posted: Date.now()
+      testimony
     };
     try {
       const created = await createGraduate(newPost);
       posts = [created, ...posts];
-    } catch (e) {
-      console.error('Failed to create graduate:', e);
-    }
+    } catch {}
     closeModal();
   }
 
-  async function removePost(id: string) {
-    try {
-      await deleteGraduate(id);
-      posts = posts.filter(post => post.id !== id);
-    } catch (e) {
-      console.error('Failed to delete graduate:', e);
-    }
-  }
+  // ...existing code...
 
     // ...existing code...
 </script>
@@ -80,7 +107,13 @@
         <div class="bg-white rounded-lg shadow-lg p-8 w-full max-w-lg relative animate-fade-in z-10">
           <button class="absolute top-2 right-2 text-gray-400 hover:text-gray-700 text-2xl font-bold" on:click={closeModal} aria-label="Close">&times;</button>
           <h2 class="text-2xl font-bold text-blue-700 mb-4 text-center">Share Your Story!</h2>
-          <form class="flex flex-col gap-4" on:submit|preventDefault={addPost}>
+          <form class="flex flex-col gap-4" on:submit|preventDefault={() => {
+            if (editIdx !== null && editIdx >= 0) {
+              updatePost(posts[editIdx].id);
+            } else {
+              addPost();
+            }
+          }}>
             <input class="border rounded px-3 py-2" placeholder="Your Name" bind:value={name} required />
             <input class="border rounded px-3 py-2" placeholder="Institution" bind:value={institution} required />
             <input class="border rounded px-3 py-2" placeholder="Course" bind:value={course} required />
@@ -95,10 +128,22 @@
     <div class="space-y-8">
       {#each posts as post, idx}
         <div class="relative rounded-lg shadow p-6 flex flex-col md:flex-row gap-6" style="background-color: #F6F1E9;">
+          <!-- 3-dot menu -->
+          <div class="absolute top-4 right-4 z-20">
+            <button class="p-2 rounded-full hover:bg-gray-200" on:click={() => menuOpenIdx = menuOpenIdx === idx ? null : idx} aria-label="Options">
+              <svg width="24" height="24" fill="currentColor" viewBox="0 0 24 24"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg>
+            </button>
+            {#if menuOpenIdx === idx}
+              <div class="absolute right-0 mt-2 w-32 bg-white border rounded shadow-lg flex flex-col">
+                <button class="px-4 py-2 text-left hover:bg-gray-100" on:click={() => startEdit(idx)}>Edit</button>
+                <button class="px-4 py-2 text-left hover:bg-gray-100 text-red-600" on:click={() => removePost(post.id)}>Delete</button>
+              </div>
+            {/if}
+          </div>
           {#if post.date_posted}
-            <span class="absolute top-4 right-6 text-sm text-gray-500">Date Posted: <span class="font-semibold">{new Date(post.date_posted).toLocaleDateString()}</span></span>
+            <span class="absolute top-4 right-16 text-sm text-gray-500">Date Posted: <span class="font-semibold">{new Date(post.date_posted).toLocaleDateString()}</span></span>
           {/if}
-          <img src={post.avatar} alt={post.name} class="w-20 h-20 rounded-full object-cover border-4 border-blue-200 mx-auto md:mx-0" />
+          <img src="/images/content_avatar.png"  alt={post.name} class="w-20 h-20 rounded-full object-cover border-4 border-blue-200 mx-auto md:mx-0" />
           <div class="flex-1 flex flex-col justify-center">
             <div class="flex items-center gap-2 mb-2">
               <span class="font-bold text-blue-800">{post.name}</span>
