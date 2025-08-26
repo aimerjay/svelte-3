@@ -31,8 +31,9 @@
       testimony
     };
     try {
-      const result = await updateGraduate(id, updated);
-      posts = posts.map(post => post.id === id ? result : post);
+      await updateGraduate(id, updated);
+      const res = await getGraduates();
+      posts = res.result;
     } catch {}
     closeModal();
     editIdx = null;
@@ -80,8 +81,9 @@
       testimony
     };
     try {
-      const created = await createGraduate(newPost);
-      posts = [created, ...posts];
+      await createGraduate(newPost);
+      const res = await getGraduates();
+      posts = res.result;
     } catch {}
     closeModal();
   }
