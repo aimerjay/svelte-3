@@ -1,24 +1,8 @@
 <script lang="ts">
-  let posts = [
-    {
-      name: 'Jane Doe',
-      avatar: '/images/award.jpg',
-      institution: 'State University',
-      course: 'BS Computer Science',
-      date_grad: '2025-06-01',
-      testimony: 'The scholarship changed my life! I was able to finish my studies and now have a great job.',
-      date_posted: 1745865600000 // Example timestamp for 2025-05-28
-    },
-    {
-      name: 'John Smith',
-      avatar: '/images/award.jpg',
-      institution: 'City College',
-      course: 'BA English',
-      date_grad: '2025-05-20',
-      testimony: 'Thanks to the foundation, I graduated debt-free and made lifelong friends.',
-      date_posted: 1745260800000 // Example timestamp for 2025-05-21
-    }
-  ];
+  import { onMount } from 'svelte';
+  import { getGraduates, createGraduate, updateGraduate, deleteGraduate } from '$lib/api';
+
+  let posts: any[] = [];
 
   let name = '';
   let institution = '';
@@ -30,6 +14,15 @@
   function openModal() {
     showModal = true;
   }
+
+  // Fetch graduates from backend on mount
+  onMount(async () => {
+    try {
+      posts = await getGraduates();
+    } catch (e) {
+      console.error('Failed to fetch graduates:', e);
+    }
+  });
   function closeModal() {
     showModal = false;
     name = '';
@@ -38,21 +31,33 @@
     date_grad = '';
     testimony = '';
   }
-  function addPost() {
+  async function addPost() {
     if (!name || !testimony || !date_grad) return;
-    posts = [
-      {
-        name,
-        avatar: '/images/award.jpg',
-        institution,
-        course,
-        date_grad,
-        testimony,
-        date_posted: Date.now()
-      },
-      ...posts
-    ];
+    const newPost = {
+      name,
+      avatar: '/images/award.jpg',
+      institution,
+      course,
+      date_grad,
+      testimony,
+      date_posted: Date.now()
+    };
+    try {
+      const created = await createGraduate(newPost);
+      posts = [created, ...posts];
+    } catch (e) {
+      console.error('Failed to create graduate:', e);
+    }
     closeModal();
+  }
+
+  async function removePost(id: string) {
+    try {
+      await deleteGraduate(id);
+      posts = posts.filter(post => post.id !== id);
+    } catch (e) {
+      console.error('Failed to delete graduate:', e);
+    }
   }
 
     // ...existing code...
