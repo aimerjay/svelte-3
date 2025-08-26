@@ -18,7 +18,8 @@
   // Fetch graduates from backend on mount
   onMount(async () => {
     try {
-      posts = await getGraduates();
+      const res = await getGraduates();
+      posts = res.result;
     } catch (e) {
       console.error('Failed to fetch graduates:', e);
     }
