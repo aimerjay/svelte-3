@@ -76,14 +76,55 @@
         // Update the selected application
         const id = applications[editIdx].id;
         if (id !== undefined) {
-          await updateApplication(String(id), { ...form, status });
+          await updateApplication(String(id), {
+            name: form.name,
+            email: form.email,
+            institution: form.institution,
+            course: form.course,
+            statement: form.reason,
+            status
+          });
+          // Update local array for instant feedback
+          applications[editIdx] = {
+            ...applications[editIdx],
+            name: form.name,
+            email: form.email,
+            institution: form.institution,
+            course: form.course,
+            reason: form.reason,
+            status
+          };
         }
         isEditing = false;
         editIdx = null;
       } else {
-        await createApplication({ ...form, status: 'Submitted' });
+        const resCreate = await createApplication({
+          name: form.name,
+          email: form.email,
+          institution: form.institution,
+          course: form.course,
+          statement: form.reason,
+          status: 'Submitted'
+        });
+        // Add to local array for instant feedback
+        if (resCreate && resCreate.result) {
+          const app = resCreate.result;
+          applications = [
+            ...applications,
+            {
+              id: app.id,
+              formatted_id: app.formatted_id,
+              name: app.full_name ?? app.name,
+              email: app.email,
+              institution: app.institution,
+              course: app.course,
+              reason: app.statement ?? app.reason,
+              status: app.status ?? 'Submitted'
+            }
+          ];
+        }
       }
-      // Refresh applications from backend
+      // Optionally, refetch from backend for consistency
       const res = await getApplications();
       if (res.success && Array.isArray(res.result)) {
         applications = res.result.map((app: any) => ({
