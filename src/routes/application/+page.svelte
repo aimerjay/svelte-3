@@ -1,6 +1,8 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   type Application = {
+    id?: number;
+    formatted_id?: string;
     name: string;
     email: string;
     institution: string;
@@ -10,6 +12,31 @@
   };
   let showModal = false;
   let applications: Application[] = [];
+  import { getApplications, createApplication, updateApplication, deleteApplication } from '$lib/api';
+  onMount(async () => {
+    try {
+      const res = await getApplications();
+      if (res.success && Array.isArray(res.result)) {
+        applications = res.result.map((app: any) => ({
+          id: app.id,
+          formatted_id: app.formatted_id,
+          name: app.full_name ?? app.name,
+          email: app.email,
+          institution: app.institution,
+          course: app.course,
+          reason: app.statement ?? app.reason,
+          status: app.status ?? 'Submitted'
+        }));
+        if (applications.length > 0) {
+          status = applications[0].status || 'Submitted';
+        } else {
+          status = 'Not Submitted';
+        }
+      }
+    } catch (e) {
+      console.error('Failed to fetch applications:', e);
+    }
+  });
   let form = {
     name: '',
     email: '',
@@ -26,15 +53,35 @@
     showModal = false;
   }
   let isEditing = false;
-  function submitApplication() {
-    if (isEditing) {
-      // Update the first application (since only one is allowed)
-      applications = applications.map((app, idx) => idx === 0 ? { ...form, status: 'Submitted' } : app);
-      status = 'Submitted';
-      isEditing = false;
-    } else {
-      applications = [...applications, { ...form, status: 'Submitted' }];
-      status = 'Submitted';
+  async function submitApplication() {
+    try {
+      if (isEditing && applications.length > 0) {
+        // Update the first application
+        const id = applications[0].id;
+        if (id !== undefined) {
+          await updateApplication(String(id), { ...form, status: 'Submitted' });
+        }
+        isEditing = false;
+      } else {
+        await createApplication({ ...form, status: 'Submitted' });
+      }
+      // Refresh applications from backend
+      const res = await getApplications();
+      if (res.success && Array.isArray(res.result)) {
+        applications = res.result.map((app: any) => ({
+          id: app.id,
+          formatted_id: app.formatted_id,
+          name: app.full_name ?? app.name,
+          email: app.email,
+          institution: app.institution,
+          course: app.course,
+          reason: app.statement ?? app.reason,
+          status: app.status ?? 'Submitted'
+        }));
+        status = applications.length > 0 ? applications[0].status || 'Submitted' : 'Not Submitted';
+      }
+    } catch (e) {
+      console.error('Failed to submit application:', e);
     }
     closeModal();
     form = { name: '', email: '', institution: '', course: '', reason: '' };
@@ -63,11 +110,39 @@
 
   {#if status !== 'Not Submitted'}
     <div class="mt-8 w-2/3 bg-white rounded-lg shadow-xl p-6 relative mx-auto">
+  <div class="mb-2 text-sm text-gray-500">Application ID: <span class="font-mono font-bold text-blue-700">{applications[0].formatted_id}</span></div>
       <div class="absolute top-4 right-4 flex gap-2">
         <button class="bg-blue-100 text-blue-700 px-6 py-2 rounded-lg font-bold shadow hover:bg-blue-200 transition" on:click={editApplication}>
           Edit
         </button>
-        <button class="bg-red-100 text-red-700 px-6 py-2 rounded-lg font-bold shadow hover:bg-red-200 transition" on:click={() => { status = 'Not Submitted'; applications = []; }}>
+        <button class="bg-red-100 text-red-700 px-6 py-2 rounded-lg font-bold shadow hover:bg-red-200 transition" on:click={async () => {
+          if (applications.length > 0) {
+            try {
+              const id = applications[0].id;
+              if (id !== undefined) {
+                await deleteApplication(String(id));
+              }
+              const res = await getApplications();
+              if (res.success && Array.isArray(res.result)) {
+                applications = res.result.map((app: any) => ({
+                  id: app.id,
+                  name: app.full_name ?? app.name,
+                  email: app.email,
+                  institution: app.institution,
+                  course: app.course,
+                  reason: app.statement ?? app.reason,
+                  status: app.status ?? 'Submitted'
+                }));
+                status = applications.length > 0 ? applications[0].status || 'Submitted' : 'Not Submitted';
+              } else {
+                status = 'Not Submitted';
+                applications = [];
+              }
+            } catch (e) {
+              console.error('Failed to withdraw application:', e);
+            }
+          }
+        }}>
           Withdraw Application
         </button>
       </div>

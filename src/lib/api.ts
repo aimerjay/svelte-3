@@ -43,6 +43,29 @@ export async function deleteGraduate(id: string) {
   });
 }
 
-// Example usage:
-// import { apiFetch } from '$lib/api';
-// const data = await apiFetch('/your-endpoint');
+// CRUD operations for applications
+export async function getApplications() {
+  return apiFetch('/applications');
+}
+
+export async function createApplication(data: object) {
+  return apiFetch('/applications', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data)
+  });
+}
+
+export async function updateApplication(id: string, data: object) {
+  return apiFetch(`/applications/${id}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data)
+  });
+}
+
+export async function deleteApplication(id: string) {
+  return apiFetch(`/applications/${id}`, {
+    method: 'DELETE'
+  });
+}
