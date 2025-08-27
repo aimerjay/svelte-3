@@ -1,4 +1,18 @@
 <script lang="ts">
+  // Helper to get color class for status
+  function getStatusColor(status: string) {
+    switch (status) {
+      case 'Denied':
+        return 'text-red-600';
+      case 'Final Interview':
+        return 'text-yellow-500';
+      case 'Approved':
+        return 'text-blue-600';
+      case 'Submitted':
+      default:
+        return 'text-green-600';
+    }
+  }
   import { onMount } from 'svelte';
   type Application = {
     id?: number;
@@ -61,7 +75,7 @@
         // Update the first application
         const id = applications[0].id;
         if (id !== undefined) {
-          await updateApplication(String(id), { ...form, status: 'Submitted' });
+          await updateApplication(String(id), { ...form, status });
         }
         isEditing = false;
       } else {
@@ -129,7 +143,6 @@
     <div class="mt-8 w-2/3 mx-auto space-y-8">
       {#each applications as app, idx}
         <div class="bg-white rounded-lg shadow-xl p-6 relative">
-          <div class="mb-2 text-sm text-gray-500">Application ID: <span class="font-mono font-bold text-blue-700">{app.formatted_id}</span></div>
           <div class="absolute top-4 right-4 flex gap-2">
             <button class="bg-blue-100 text-blue-700 px-6 py-2 rounded-lg font-bold shadow hover:bg-blue-200 transition" on:click={() => editApplicationIdx(idx)}>
               Edit
@@ -157,15 +170,15 @@
                     applications = [];
                   }
                 } catch (e) {
-                  console.error('Failed to withdraw application:', e);
+                  console.error('Failed to delete application:', e);
                 }
               }
             }}>
-              Withdraw Application
+              Delete
             </button>
           </div>
           <h2 class="text-2xl font-bold text-blue-900 mb-2">Application <span class="font-mono font-bold text-blue-700">{app.formatted_id}</span></h2>
-          <p class="text-lg text-gray-700">Status: <span class="font-bold text-green-600">{app.status}</span></p>
+          <p class="text-lg text-gray-700">Status: <span class="font-bold {getStatusColor(app.status)}">{app.status}</span></p>
           <div class="mt-2 text-gray-700"><strong>Name:</strong> {app.name}</div>
           <div class="mt-1 text-gray-700"><strong>Email:</strong> {app.email}</div>
           <div class="mt-1 text-gray-700"><strong>Institution:</strong> {app.institution}</div>
@@ -188,6 +201,14 @@
           <input type="text" placeholder="Institution" bind:value={form.institution} required class="w-full px-4 py-3 border rounded" />
           <input type="text" placeholder="Course" bind:value={form.course} required class="w-full px-4 py-3 border rounded" />
           <textarea placeholder="Why do you deserve this scholarship?" bind:value={form.reason} required class="w-full px-4 py-3 border rounded resize-none"></textarea>
+          {#if isEditing}
+            <select bind:value={status} class="w-full px-4 py-3 border rounded">
+              <option value="Submitted">Submitted</option>
+              <option value="Denied">Denied</option>
+              <option value="Final Interview">Final Interview</option>
+              <option value="Approved">Approved</option>
+            </select>
+          {/if}
           <button type="submit" class="bg-yellow-300 text-yellow-900 px-8 py-3 rounded-lg font-bold shadow hover:bg-yellow-400 transition w-full">{isEditing ? 'Save' : 'Submit'}</button>
         </form>
       </div>
