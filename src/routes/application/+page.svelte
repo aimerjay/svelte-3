@@ -51,6 +51,8 @@
   }
   function closeModal() {
     showModal = false;
+    form = { name: '', email: '', institution: '', course: '', reason: '' };
+    isEditing = false;
   }
   let isEditing = false;
   async function submitApplication() {
@@ -162,7 +164,7 @@
               Withdraw Application
             </button>
           </div>
-          <h2 class="text-2xl font-bold text-blue-900 mb-2">Application Status</h2>
+          <h2 class="text-2xl font-bold text-blue-900 mb-2">Application <span class="font-mono font-bold text-blue-700">{app.formatted_id}</span></h2>
           <p class="text-lg text-gray-700">Status: <span class="font-bold text-green-600">{app.status}</span></p>
           <div class="mt-2 text-gray-700"><strong>Name:</strong> {app.name}</div>
           <div class="mt-1 text-gray-700"><strong>Email:</strong> {app.email}</div>
