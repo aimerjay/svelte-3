@@ -100,6 +100,21 @@
       status = applications[0].status;
     }
   }
+
+  // Helper for editing a specific application
+  function editApplicationIdx(idx: number) {
+    const app = applications[idx];
+    form = {
+      name: app.name,
+      email: app.email,
+      institution: app.institution,
+      course: app.course,
+      reason: app.reason
+    };
+    isEditing = true;
+    showModal = true;
+    status = app.status;
+  }
 </script>
 
 <section class="min-h-screen bg-yellow-50 flex flex-col items-center py-12">
@@ -108,46 +123,54 @@
     Submit Application
   </button>
 
-  {#if status !== 'Not Submitted'}
-    <div class="mt-8 w-2/3 bg-white rounded-lg shadow-xl p-6 relative mx-auto">
-  <div class="mb-2 text-sm text-gray-500">Application ID: <span class="font-mono font-bold text-blue-700">{applications[0].formatted_id}</span></div>
-      <div class="absolute top-4 right-4 flex gap-2">
-        <button class="bg-blue-100 text-blue-700 px-6 py-2 rounded-lg font-bold shadow hover:bg-blue-200 transition" on:click={editApplication}>
-          Edit
-        </button>
-        <button class="bg-red-100 text-red-700 px-6 py-2 rounded-lg font-bold shadow hover:bg-red-200 transition" on:click={async () => {
-          if (applications.length > 0) {
-            try {
-              const id = applications[0].id;
+  {#if applications.length > 0}
+    <div class="mt-8 w-2/3 mx-auto space-y-8">
+      {#each applications as app, idx}
+        <div class="bg-white rounded-lg shadow-xl p-6 relative">
+          <div class="mb-2 text-sm text-gray-500">Application ID: <span class="font-mono font-bold text-blue-700">{app.formatted_id}</span></div>
+          <div class="absolute top-4 right-4 flex gap-2">
+            <button class="bg-blue-100 text-blue-700 px-6 py-2 rounded-lg font-bold shadow hover:bg-blue-200 transition" on:click={() => editApplicationIdx(idx)}>
+              Edit
+            </button>
+            <button class="bg-red-100 text-red-700 px-6 py-2 rounded-lg font-bold shadow hover:bg-red-200 transition" on:click={async () => {
+              const id = app.id;
               if (id !== undefined) {
-                await deleteApplication(String(id));
+                try {
+                  await deleteApplication(String(id));
+                  const res = await getApplications();
+                  if (res.success && Array.isArray(res.result)) {
+                    applications = res.result.map((app: any) => ({
+                      id: app.id,
+                      formatted_id: app.formatted_id,
+                      name: app.full_name ?? app.name,
+                      email: app.email,
+                      institution: app.institution,
+                      course: app.course,
+                      reason: app.statement ?? app.reason,
+                      status: app.status ?? 'Submitted'
+                    }));
+                    status = applications.length > 0 ? applications[0].status || 'Submitted' : 'Not Submitted';
+                  } else {
+                    status = 'Not Submitted';
+                    applications = [];
+                  }
+                } catch (e) {
+                  console.error('Failed to withdraw application:', e);
+                }
               }
-              const res = await getApplications();
-              if (res.success && Array.isArray(res.result)) {
-                applications = res.result.map((app: any) => ({
-                  id: app.id,
-                  name: app.full_name ?? app.name,
-                  email: app.email,
-                  institution: app.institution,
-                  course: app.course,
-                  reason: app.statement ?? app.reason,
-                  status: app.status ?? 'Submitted'
-                }));
-                status = applications.length > 0 ? applications[0].status || 'Submitted' : 'Not Submitted';
-              } else {
-                status = 'Not Submitted';
-                applications = [];
-              }
-            } catch (e) {
-              console.error('Failed to withdraw application:', e);
-            }
-          }
-        }}>
-          Withdraw Application
-        </button>
-      </div>
-      <h2 class="text-2xl font-bold text-blue-900 mb-2">Your Application Status</h2>
-      <p class="text-lg text-gray-700">Status: <span class="font-bold text-green-600">{status}</span></p>
+            }}>
+              Withdraw Application
+            </button>
+          </div>
+          <h2 class="text-2xl font-bold text-blue-900 mb-2">Application Status</h2>
+          <p class="text-lg text-gray-700">Status: <span class="font-bold text-green-600">{app.status}</span></p>
+          <div class="mt-2 text-gray-700"><strong>Name:</strong> {app.name}</div>
+          <div class="mt-1 text-gray-700"><strong>Email:</strong> {app.email}</div>
+          <div class="mt-1 text-gray-700"><strong>Institution:</strong> {app.institution}</div>
+          <div class="mt-1 text-gray-700"><strong>Course:</strong> {app.course}</div>
+          <div class="mt-1 text-gray-700"><strong>Statement:</strong> {app.reason}</div>
+        </div>
+      {/each}
     </div>
   {/if}
 
