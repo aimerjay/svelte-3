@@ -77,7 +77,7 @@
         const id = applications[editIdx].id;
         if (id !== undefined) {
           await updateApplication(String(id), {
-            name: form.name,
+            full_name: form.name,
             email: form.email,
             institution: form.institution,
             course: form.course,
