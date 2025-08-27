@@ -30,6 +30,7 @@
     if (isEditing) {
       // Update the first application (since only one is allowed)
       applications = applications.map((app, idx) => idx === 0 ? { ...form, status: 'Submitted' } : app);
+      status = 'Submitted';
       isEditing = false;
     } else {
       applications = [...applications, { ...form, status: 'Submitted' }];
@@ -49,6 +50,7 @@
       };
       isEditing = true;
       showModal = true;
+      status = applications[0].status;
     }
   }
 </script>
@@ -86,7 +88,7 @@
           <input type="text" placeholder="Institution" bind:value={form.institution} required class="w-full px-4 py-3 border rounded" />
           <input type="text" placeholder="Course" bind:value={form.course} required class="w-full px-4 py-3 border rounded" />
           <textarea placeholder="Why do you deserve this scholarship?" bind:value={form.reason} required class="w-full px-4 py-3 border rounded resize-none"></textarea>
-          <button type="submit" class="bg-yellow-300 text-yellow-900 px-8 py-3 rounded-lg font-bold shadow hover:bg-yellow-400 transition w-full">Submit</button>
+          <button type="submit" class="bg-yellow-300 text-yellow-900 px-8 py-3 rounded-lg font-bold shadow hover:bg-yellow-400 transition w-full">{isEditing ? 'Save' : 'Submit'}</button>
         </form>
       </div>
     </div>

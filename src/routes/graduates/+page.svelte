@@ -121,7 +121,7 @@
             <input class="border rounded px-3 py-2" placeholder="Course" bind:value={course} required />
             <input class="border rounded px-3 py-2" type="date" placeholder="Date of Graduation" bind:value={date_grad} required />
             <textarea class="border rounded px-3 py-2" placeholder="Share your testimony..." bind:value={testimony} required rows="3"></textarea>
-            <button class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-2 rounded self-end" type="submit">Post</button>
+              <button class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-2 rounded self-end" type="submit">{editIdx !== null && editIdx >= 0 ? 'Save' : 'Post'}</button>
           </form>
         </div>
       </div>
