@@ -82,7 +82,7 @@
             institution: form.institution,
             course: form.course,
             statement: form.reason,
-            status
+            status: String(status)
           });
           // Update local array for instant feedback
           applications[editIdx] = {
@@ -99,7 +99,7 @@
         editIdx = null;
       } else {
         const resCreate = await createApplication({
-          name: form.name,
+          full_name: form.name,
           email: form.email,
           institution: form.institution,
           course: form.course,
