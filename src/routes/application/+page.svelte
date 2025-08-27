@@ -69,15 +69,17 @@
     isEditing = false;
   }
   let isEditing = false;
+  let editIdx: number | null = null;
   async function submitApplication() {
     try {
-      if (isEditing && applications.length > 0) {
-        // Update the first application
-        const id = applications[0].id;
+      if (isEditing && editIdx !== null && applications[editIdx]) {
+        // Update the selected application
+        const id = applications[editIdx].id;
         if (id !== undefined) {
           await updateApplication(String(id), { ...form, status });
         }
         isEditing = false;
+        editIdx = null;
       } else {
         await createApplication({ ...form, status: 'Submitted' });
       }
@@ -103,18 +105,7 @@
     form = { name: '', email: '', institution: '', course: '', reason: '' };
   }
   function editApplication() {
-    if (applications.length > 0) {
-      form = {
-        name: applications[0].name,
-        email: applications[0].email,
-        institution: applications[0].institution,
-        course: applications[0].course,
-        reason: applications[0].reason
-      };
-      isEditing = true;
-      showModal = true;
-      status = applications[0].status;
-    }
+    // Not used in card UI anymore
   }
 
   // Helper for editing a specific application
@@ -130,6 +121,7 @@
     isEditing = true;
     showModal = true;
     status = app.status;
+    editIdx = idx;
   }
 </script>
 
