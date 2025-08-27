@@ -2,7 +2,7 @@
   // Helper to get color class for status
   function getStatusColor(status: string) {
     switch (status) {
-      case 'Denied':
+      case 'Declined':
         return 'text-red-600';
       case 'Final Interview':
         return 'text-yellow-500';
@@ -237,7 +237,7 @@
           {#if isEditing}
             <select bind:value={status} class="w-full px-4 py-3 border rounded">
               <option value="Submitted">Submitted</option>
-              <option value="Denied">Denied</option>
+              <option value="Declined">Declined</option>
               <option value="Final Interview">Final Interview</option>
               <option value="Approved">Approved</option>
             </select>
